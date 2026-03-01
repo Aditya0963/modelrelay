@@ -1332,7 +1332,7 @@
       </div>
       <h3 style="margin: 2rem 0 0.25rem; font-size: 1rem;">Providers</h3>
       <p style="color: var(--text-muted); margin: 0 0 1.25rem; font-size: 0.84rem;">Configure API keys to enable models from different providers.</p>
-      <div id="providers-container">
+      <div id="providers-container" class="autoupdate-panel">
         <!-- Settings generated here -->
       </div>
     </div>
@@ -2566,6 +2566,11 @@
               <input type="password" id="key-${p.key}" placeholder="${p.hasKey ? '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022 (' + (tokenOptional ? 'API Key Configured' : 'Key Configured') + ')' : (tokenOptional ? 'Enter API Key (optional)...' : 'Enter API Key...')}" style="flex:1;" onblur="updateProviderKey('${p.key}')">
               <button onclick="const i=document.getElementById('key-${p.key}'); i.type=i.type==='password'?'text':'password'; this.textContent=i.type==='password'?'👁':'🙈';" style="border:1px solid var(--border); background:white; cursor:pointer; padding:8px 10px; border-radius:6px; font-size:0.85rem; white-space:nowrap;">👁</button>
             </div>
+            <div class="form-group" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+              <span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">Ping interval (min):</span>
+              <input type="number" id="ping-interval-${p.key}" min="1" step="1" value="${p.pingIntervalMinutes || ''}" placeholder="30" style="width:70px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.8rem;" onchange="updateProviderPingInterval('${p.key}')">
+              <span style="font-size:0.75rem; color:var(--text-muted);">(default: 30)</span>
+            </div>
             ${optionalBearerAuthHtml}
             ${qwenAuthActionsHtml}
             ${providerErrorHtml}
@@ -2596,6 +2601,23 @@
       });
       input.value = '';
       loadSettings();
+    }
+
+    async function updateProviderPingInterval(key) {
+      const input = document.getElementById(`ping-interval-${key}`);
+      const val = input.value.trim();
+      let pingIntervalMinutes = null;
+      if (val !== '') {
+        const parsed = parseInt(val, 10);
+        if (!Number.isNaN(parsed) && parsed >= 1) {
+          pingIntervalMinutes = parsed;
+        }
+      }
+      await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ providerKey: key, pingIntervalMinutes })
+      });
     }
 
     async function updateProviderBearerAuth(key) {
