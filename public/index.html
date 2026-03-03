@@ -20,6 +20,22 @@
       --error: #ef4444;
     }
 
+    .pill-estimate {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: #f3f4f6;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      margin-left: 4px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
     body {
       margin: 0;
       font-family: "Geist", "Inter", sans-serif;
@@ -2245,7 +2261,7 @@
 
         // Update Intell
         const intellCell = row.cells[3];
-        intellCell.innerHTML = `<div style="font-weight: 600;">${getBenchmarkTableDisplayValue(m.intell)}</div>`;
+        intellCell.innerHTML = `<div style="font-weight: 600;">${getBenchmarkTableDisplayValue(m.intell, m.isEstimatedScore)}</div>`;
 
         // Update status dot and text
         const statusCell = row.cells[6];
@@ -2312,7 +2328,7 @@
           <td>
             <div style="font-weight: 700; color: ${getQosColor(m.qos)}">${getQosDisplayValue(m.qos)}</div>
           </td>
-          <td><div style="font-weight: 600;">${getBenchmarkTableDisplayValue(m.intell)}</div></td>
+          <td><div style="font-weight: 600;">${getBenchmarkTableDisplayValue(m.intell, m.isEstimatedScore)}</div></td>
           <td class="text-right">
             <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
               <div class="ping-dot ${hasPing ? 'active ' + pingClass : ''}" style="--speed: ${pingSpeed}"></div>
@@ -2377,16 +2393,19 @@
       return n;
     }
 
-    function getBenchmarkDisplayValue(value) {
+    function getBenchmarkDisplayValue(value, isEstimated = false) {
       const n = Number(value);
       if (!Number.isFinite(n) || n <= 0) return '—';
-      return Number(n.toFixed(1));
+      const pill = isEstimated ? '<span class="pill-estimate">Unknown</span>' : '';
+      return `${Math.round(n * 100)}${pill}`;
     }
 
-    function getBenchmarkTableDisplayValue(value) {
+    function getBenchmarkTableDisplayValue(value, isEstimated = false) {
       const n = Number(value);
       if (!Number.isFinite(n) || n <= 0) return '—';
-      return Math.round(n * 100);
+      const score = Math.round(n * 100);
+      const pill = isEstimated ? '<span class="pill-estimate">Unknown</span>' : '';
+      return `${score}${pill}`;
     }
 
     function formatIsoDateTime(value) {
@@ -3333,7 +3352,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
           <div style="background: #faf9f8; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">SWE-bench</div>
-            <div style="font-weight: 700;">${getBenchmarkDisplayValue(m.intell)}</div>
+            <div style="font-weight: 700;">${getBenchmarkDisplayValue(m.intell, m.isEstimatedScore)}</div>
           </div>
           <div style="background: #faf9f8; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Context</div>

@@ -5,13 +5,18 @@
 
 import { scores } from './scores.js'
 
-function canonicalizeModelId(modelId) {
-  return modelId.replace(/:[a-z0-9-]+$/i, '')
+export function canonicalizeModelId(modelId) {
+  // 1. Remove suffix like :free
+  const base = modelId.replace(/:[a-z0-9-]+$/i, '');
+  // 2. Remove provider prefix like google/
+  const unprefixed = base.includes('/') ? base.split('/').pop() : base;
+  return { base, unprefixed };
 }
 
-function getScore(modelId) {
-  const canonical = canonicalizeModelId(modelId)
-  return scores[canonical] ?? null
+export function getScore(modelId) {
+  const { base, unprefixed } = canonicalizeModelId(modelId);
+  // Try exact match first (e.g. google/gemma-3-4b-it), then fallback to unprefixed (e.g. gemma-3-4b-it)
+  return scores[base] ?? scores[unprefixed] ?? null;
 }
 
 export const sources = {
