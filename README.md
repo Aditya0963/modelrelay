@@ -60,8 +60,8 @@ mkdir modelrelay
 
 cd modelrelay
 
-wget -O Dockerfile https://raw.githubusercontent.com/ellipticmarketing/modelrelay/master/Dockerfile
-wget -O docker-compose.yml https://raw.githubusercontent.com/ellipticmarketing/modelrelay/master/docker-compose.yml
+curl -fsSL -o Dockerfile https://raw.githubusercontent.com/ellipticmarketing/modelrelay/master/Dockerfile
+curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/ellipticmarketing/modelrelay/master/docker-compose.yml
 
 docker compose up -d --build
 ```
